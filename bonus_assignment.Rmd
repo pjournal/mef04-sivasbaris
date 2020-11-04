@@ -1,0 +1,40 @@
+---
+title: "Bonus Assignment"
+author: "Barış Sivas"
+date: "04-11-2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(readxl)
+```
+
+## Data Preperation
+
+```{r}
+data_bonus<- read_xlsx("C:/Users/bsivas/Desktop/Bonus Assignment/EVDS_istanbul_property_data.xlsx", n_max = 131)
+data_frame_v4<- rename(data_bonus, "Date" = "Tarih", "Total_Sales" = "TP AKONUTSAT1 T40", "mortgage_Sales"="TP AKONUTSAT2 T40","first_hand_sales"= "TP AKONUTSAT3 T40","second_hand_sales"="TP AKONUTSAT4 T40","foreigner_Sales"= "TP DISKONSAT ISTANBUL", "new_price_rate"="TP HEDONIKYKFE IST", "price_rate"="TP HKFE02", "unit_price(TL/m^2)"="TP TCBF02 ISTANBUL")
+str(data_frame_v4)
+dt_sales<- data_frame_v4%>%
+  pivot_longer(!Date, names_to="Sales_Types", values_to="Numbers")%>%
+  filter(Sales_Types %in% c('Total_Sales','mortgage_Sales','first_hand_sales', 'second_hand_sales','foreigner_Sales'), Date>= 2013)
+```
+## Data visualization with ggplot2
+
+When we look at the plots, we can assume that the mortgage sales gets its highest point due to the lowest credit opportunity.
+
+```{r}
+ggplot(data_frame_v4, aes(x= Date, y= Total_Sales,color="Total_Sales",  group = 1))+geom_line() + 
+  geom_line(aes(x= Date, y= mortgage_Sales,color="mortgage_Sales", group = 1)) +
+  geom_line(aes(x= Date, y= first_hand_sales,color="first_hand_sales", group = 1))+
+  geom_line(aes(x= Date, y= second_hand_sales,color="second_hand_sales", group = 1))+
+  geom_line(aes(x= Date, y= foreigner_Sales,color="foreigner_Sales", group = 1))
+  
+
+```
+
+
+
