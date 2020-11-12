@@ -2,4 +2,4 @@
 ## *Assignments*
 ## **[Assignment-1: R Markdown](assignment_1_rmarkdown.html)**
 ## **[Bonus_assignment](bonus_assignment.html)**
-## **[Assignment2-Electricity_Prices](Assignment2-Electricity_Prices.html)**
+## **[Assignment-2: Electricity_Prices](Assignment2-Electricity_Prices.html)**
