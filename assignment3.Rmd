@@ -1,0 +1,234 @@
+---
+title: "Assignment3: Esoph and Youth Survey"
+author: "Barış Sivas"
+date: "19 12 2020"
+output: 
+  html_document:
+    code_folding: hide
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      collapsed: no
+    theme: united
+    highlight: tango
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+  word_document:
+    toc: yes
+    toc_depth: '3'
+---
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE, error=FALSE)
+
+```
+
+# 1.Esoph Analysis
+
+## 1.1 Preparation to The Data Analysis
+
+There are some kind of packages that could be used in both analysis downloaded firstly.
+
+```{r}
+library(tidyverse)
+library(rio)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+```
+
+With the aim of understanding what the data includes, a quick snapshot was taken as shown below. The data tells about the age distribution of the people who had an issue about cancer disease(cases or controls) with their alcohol and tobacco usage routines.
+
+
+```{r}
+head(esoph, 10)
+```
+
+```{r}
+summary(esoph)
+```
+
+## 1.2. Distribution of The Cancer Case Among Age Groups
+
+Definition of the Cancer Rate could be given as the number of ncases people who had token controls before the disease was known. After the calculation was done, a pie chart was drawn as it could be seen below. According to the chart the most risky age groups can be ordered as +75; %34, 65-74; %31, 55-64; % 30 ...
+
+
+```{r}
+dt1<- esoph %>%
+  group_by(agegp)%>%
+  summarise(total_ncases = sum(ncases), total_control = sum(ncontrols))%>%
+  mutate(Cancer_Rate = round(total_ncases*100/total_control))%>%
+  arrange(desc(Cancer_Rate))
+  
+  dt1
+ggplot(dt1, aes(x="", y=Cancer_Rate,"%", fill=agegp)) + geom_bar(stat="identity") + 
+  geom_text(aes(x= 1.2, y = Cancer_Rate/2 + c(0, cumsum(Cancer_Rate)[-length(Cancer_Rate)]), label = Cancer_Rate),  size=5, color = "white")+
+  coord_polar(theta = "y") + 
+  scale_fill_brewer(palette = "Dark2")+
+  theme_void()+ 
+  labs(title = "%Cancer Rate & Age Range", fill = "Age Group")
+  
+```
+
+## 1.3. Relationship Between The Cancer Case and Alcohol Consumption
+
+
+This analyse sents a warn message to the people who takes 120 g alcohol per a day. Unfortunately high level alcohol consumption could be deadly especially for people who are older than 45 years old.
+
+```{r}
+dt2<- esoph %>%
+  group_by(agegp,alcgp)%>%
+  summarise(total_ncases = sum(ncases), total_control = sum(ncontrols))%>%
+  mutate(Cancer_Rate = total_ncases*100/ total_control)%>%
+  arrange(desc(Cancer_Rate))
+  
+  dt2
+
+  ggplot(dt2, aes(x = agegp, y = Cancer_Rate, fill= alcgp))+
+  geom_bar(stat="identity", position = "dodge" ) +theme(axis.text.x = element_text(angle=0, size=9, vjust=0.5,hjust=1)) +
+    labs(title = "Cancer Rate Distribution", x = "Age Range", fill="Alcohol Consumption")
+```
+
+## 1.4. Relationship Between The Cancer Case and Tobacco Consumption
+
+This analyse also sents a warn message to the people who takes 30 g tobacco per a day. It could be more dangerous especially for people who are older than 45 years old.
+
+```{r}
+dt3<- esoph %>%
+  group_by(agegp,tobgp)%>%
+  summarise(total_ncases = sum(ncases), total_control = sum(ncontrols))%>%
+  mutate(Cancer_Rate = total_ncases*100/ total_control)%>%
+  arrange(desc(Cancer_Rate))
+  
+  dt3
+
+  ggplot(dt3, aes(x = agegp, y = Cancer_Rate, fill= tobgp))+
+  geom_bar(stat="identity", position = "dodge") +theme(axis.text.x = element_text(angle=0, size=9, vjust=0.5,hjust=1)) +
+    labs(title = "Cancer Rate Distribution", x = "Age Range",fill="Tobacco Consumption")
+```
+
+## 1.5. Effectivness of Both Alcohol and Tobacco Consumption
+
+
+According to the last two analysis not only tobacco but also alcohol consumption is too harmfull for especially elderly people. Now in this last analysis we tried to understand what will happen if people uses these two bad habit together. If a person take more than 40-79 g alcohol per a day with +30 g tobacco, s/he will definetely get cancer disease at the end. However even if a person with tobacco habit will use more thant 80 g alcohol per a day, s/he will definetely get cancer disease at the end also.
+
+```{r}
+dt3<- esoph %>%
+  group_by(agegp,alcgp, tobgp)%>%
+  summarise(total_ncases = sum(ncases), total_control = sum(ncontrols))%>%
+  mutate(Cancer_Rate = total_ncases*100/ total_control)%>%
+  arrange(desc(Cancer_Rate))
+  
+  dt2
+
+  ggplot(dt3, aes(x = alcgp, y = Cancer_Rate, fill= tobgp))+
+  geom_bar(stat="identity", position = "dodge") +theme(axis.text.x = element_text(angle=0, size=9, vjust=0.5,hjust=1)) +
+    labs(title = "Cancer Rate Distribution", x = "Alcohol Consumption", fill = "Tobacco Consumption")
+```
+
+
+
+
+# 2.Young People Response Analysis
+
+
+## 2.1. Preparation to The Data Analysis
+
+After a quick research, the data of "Young People Responses" was downloaded from kaggle website and then it was uploaded to my progres journal in github for quick access those people who will try to make same work in the 
+In order to get rid of missing values na.omit function was used on raw data to assign as raw_ys.
+
+```{r}
+ ys<- rio::import("https://github.com/pjournal/mef04-sivasbaris/blob/gh-pages/young_people_responses.csv?raw=True")
+
+raw_ys<- na.omit(ys)
+glimpse(raw_ys)
+
+```
+
+## 2.2. Selecting Data
+
+After taking a snapshot to cleaned data, the rows between 32 to 63 which were assigned as History: Pets was selected.
+
+```{r}
+
+survey_df = as.data.frame(raw_ys)
+survey_data = survey_df[32:63]
+head(survey_data)
+summary(survey_data)
+glimpse(survey_data)
+```
+
+## 2.3. Principal Component Analysis
+
+To understand which component is more effective on analysis, princomp function used on surveyed_data.
+Between 32 components, the first 14 components were chosen for PCA analysis due to the their cumulative proportion with 72%.
+
+```{r}
+pca <- princomp(as.matrix(survey_data[1:32]),cor=T)
+summary(pca,loadings=TRUE)
+```
+## 2.4. Preparation of Limited Components for Correlation
+
+As it can be seen from the graph which was drawn at below, the first 7 PC are responsible for 78.18% of the variation.
+
+
+```{r}
+pca <- princomp(as.matrix(survey_data[1:14]),cor=T)
+summary(pca,loadings=TRUE)
+```
+The plot at below shows that with the first 10 component, nearly 90% of the variation is explained.
+
+
+```{r}
+ggplot(data.frame(pc=1:14,cum_var=c(0.1933541, 0.3571346, 0.5026248, 0.57892018, 0.6512518, 0.71726939, 0.78188972, 0.82759186, 0.86688253, 0.90265997, 0.93509576, 0.95916222, 0.98186244, 1.00000000)),aes(x=pc,y=cum_var)) + 
+  geom_point() + 
+  geom_line()
+```
+
+## 2.5. Multidimensional Scaling Analysis
+
+
+```{r}
+survey_mds_data <- survey_data[,sapply(survey_data,class)=="integer"] %>%
+  select(History:Pets)
+```
+
+```{r}
+survey_mds_distance <- 1 - cor(survey_mds_data)
+
+survey_mds <- cmdscale(survey_mds_distance,k=2)
+
+colnames(survey_mds) <- c("x","y")
+
+print(survey_mds)
+```
+
+```{r}
+ggplot(data.frame(survey_mds),aes(x=x,y=y)) +
+  geom_text(label=rownames(survey_mds),size=3.5) +
+  labs(x="x",y="y", title="MDS - Grouping Hobies By Relational Distance") 
+```
+
+## 2.6. In Conclusion
+
+To sum up, it can be said that;
+
+- Celebrities- Shopping
+- Active Sports- Adrenaline- Pssive Sports- Politics
+- Science and technology- Mathematics
+- Medicine-Biology-Chemistry
+- countryside, Outdoors-History- Musical Instruments- Religion
+- Art exhibitions- Theatre- Reading
+- Foreign Language- Dancing
+- Gardening- Psychology- Writing
+- Geography-History
+
+categories are the most relational to each other.
+
+
+# 3. References
+
+- [Young People Survey](https://www.kaggle.com/miroslavsabo/young-people-survey/data)
+- [Adding percentage labels on pie chart in R](https://stackoverflow.com/questions/41338757/adding-percentage-labels-on-pie-chart-in-r)
+- [Top 50 ggplot2 Visualizations](http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html#Pie%20Chart)
