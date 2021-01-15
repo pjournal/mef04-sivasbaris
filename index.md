@@ -1,12 +1,16 @@
 ## **Welcome**
 ### *Assignments*
 - *[Assignment-1: R Markdown](assignment_1_rmarkdown.html)*
+
 This R-Markdown paper was written for whom wants to learn something about me.
 - *[Bonus_assignment](bonus_assignment.html)*
+
 This short study was kind of data analysis practice for me with the data of Houses located in İstanbul.
 - *[Assignment-2: Electricity_Prices](Assignment2-Electricity_Prices.html)*
+
 When time moves my practices are getting more long and complex. This study was related to the electricty stock prices.
 - *[Assignment-3: Esoph and Youth Survey](Assignment3_Esoph_Youth_Survey.html)*
+
 There are two different data analysis were studied in this paper. First one tells about the age distribution of the people who had an issue about cancer disease(cases or controls) with their alcohol and tobacco usage routines. And second one was a type of study which was includes young people's responses about thier interests.
 
 
